@@ -16,8 +16,11 @@ public class FirstMapper extends Mapper<LongWritable, Text, Text, NullWritable> 
 
   Text keyOut = new Text();
   private List<String> smallTable;
-  private static final NullWritable NULL = NullWritable.get();
   private StringBuilder builder = new StringBuilder();
+  private String separator;
+  private static final NullWritable NULL = NullWritable.get();
+  public static final String SEPARATOR_KEY = "separator";
+
 
   enum FIRST_MAPPER {
     SETUP_CALLED,
@@ -30,6 +33,7 @@ public class FirstMapper extends Mapper<LongWritable, Text, Text, NullWritable> 
     context.getCounter(FIRST_MAPPER.SETUP_CALLED).increment(1);
     smallTable = HdfsFileUtils.readLines(
         context.getConfiguration(), context.getCacheFiles()[0]);
+    separator = context.getConfiguration().get(SEPARATOR_KEY, " ");
   }
 
   @Override
@@ -39,10 +43,10 @@ public class FirstMapper extends Mapper<LongWritable, Text, Text, NullWritable> 
     context.getCounter(FIRST_MAPPER.MAP_CALLED).increment(1);
 
     String bigTableRow = value.toString();
-    String[] bigTableColumns = bigTableRow.split(" ");
+    String[] bigTableColumns = bigTableRow.split(separator);
 
     for (String row : smallTable) {
-      String[] columns = row.split(" ");
+      String[] columns = row.split(separator);
       if (columns[0].equals(bigTableColumns[0])) {
         builder.setLength(0);
         builder

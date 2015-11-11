@@ -17,9 +17,10 @@ public class SeparatorConversion {
 
   public static final String JOB_NAME = SeparatorConversion.class.getName();
 
-  public static Job newJob(String[] args) throws IOException {
+  public static Job newJob(Configuration config, String[] args)
+      throws IOException {
 
-    Job job = Job.getInstance(new Configuration(), JOB_NAME);
+    Job job = Job.getInstance(config, JOB_NAME);
 
     FileInputFormat.addInputPaths(job, args[2]);
     TextOutputFormat.setOutputPath(job, new Path(args[3]));
@@ -27,5 +28,9 @@ public class SeparatorConversion {
     job.setReducerClass(SecondReducer.class);
 
     return job;
+  }
+
+  public static Job newJob(String[] args) throws IOException {
+    return newJob(new Configuration(), args);
   }
 }
